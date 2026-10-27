@@ -48,3 +48,40 @@ Unplug this header here and connect your new header in it's place, with pin 1 fa
 Connect this to the Raspberry Pi. You will almost certainly need to remove it to have room to connect it.
 
 Reassemble the transmitter and connect it to the network to begin the software setup.
+
+## Software Setup
+
+SSH into the Raspberry Pi. You had previously changed the login to username ``pi`` password ``change_me`` in the above steps.
+
+First, download the binary (or build yourself!), update it's permissions, and copy it to the ``/usr/bin`` folder.
+
+```
+wget https://github.com/Roman-Port/MrdsControl/releases/download/v0.1/MrdsControl
+chmod 777 ./MrdsControl
+sudo mv ./MrdsControl /usr/bin/
+```
+
+Now, add the current user to the group that allows access to the serial port.
+
+```
+sudo usermod -a -G dialout $USER
+```
+
+Then, download the service config, copy it to the services directory, start it, and enable it to run on startup.
+
+```
+wget https://github.com/Roman-Port/MrdsControl/releases/download/v0.1/mrds.service
+mv mrds.service /etc/systemd/system/
+sudo service mrds start
+sudo systemctl enable mrds
+```
+
+The server is now running, by default, on port ``10001``. You can now follow the instructions in the original [README.md](README.md) file for usage instructions. Make sure it's running and functioning.
+
+If it's not working, you can run ``sudo service mrds status`` to view info. If it says that no file, run ``ls /dev/ttyUSB`` and see if there any devices. If not, check your USB connection.
+
+Finally, you should change the password of this user account. Run this and follow the prompts.
+
+```
+passwd
+```
