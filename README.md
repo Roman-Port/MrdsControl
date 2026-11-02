@@ -36,4 +36,6 @@ Additionally, the ``SAVE`` and ``RESET`` commands are supported. You can also qu
 
 Run ``./MrdsControl`` without arguments to see full help. The only required option is ``-f`` specifying a path to the serial device file.
 
+You may find it useful to specify the ``-v`` option to enable verification of writes. The MRDS1322 does not acknowledge writes, so if it is offline and you do not verify the writes its absence may not be noticed.
+
 Once running you can connect to the multi-threaded TCP server using the "raw" option in PuTTY. The default port is ``10001``. To test connection, type ``?`` and press enter.

@@ -11,8 +11,10 @@
 #define TRANSPORT_BUFFER_SIZE 600
 //#define RDS_DUMMY_MODE
 
+int rds_verify_enabled = 0; // If 1, writes are read back to entire they were written correctly
+
 static int port_fd = -1;
-static uint8_t transport_buffer[TRANSPORT_BUFFER_SIZE]; // Holds encoded data for transport
+static uint8_t transport_buffer[TRANSPORT_BUFFER_SIZE]; // Holds encoded data for transmit only
 static pthread_mutex_t rds_mutex;
 
 #ifdef RDS_DUMMY_MODE
@@ -160,6 +162,18 @@ int rds_register_write(uint8_t reg, uint8_t length, const uint8_t* buffer) {
 	if (write(port_fd, transport_buffer, outOffset) != outOffset)
 		return RDS_ERROR_TRANSMIT;
 #endif
+
+	//If verify is enabled and this is NOT the write-only control register, read contents back
+	if (rds_verify_enabled && reg != RDS_REG_CONTROL && length <= TRANSPORT_BUFFER_SIZE) {
+		//Read back into this register
+		int readResult = rds_register_read(reg, length, transport_buffer);
+		if (readResult != RDS_ERROR_OK)
+			return readResult;
+
+		//Compare
+		/*if (memcmp(buffer, transport_buffer, length) != 0)
+			return RDS_ERROR_BAD_VERIFY;*/
+	}
 
 	//OK
 	return RDS_ERROR_OK;

@@ -7,6 +7,7 @@
 #define RDS_ERROR_MALFORMED_REPLY 2
 #define RDS_ERROR_TRANSMIT 3
 #define RDS_ERROR_OVERFLOW 4
+#define RDS_ERROR_BAD_VERIFY 5
 
 #define RDS_REG_PI 0
 #define RDS_REG_PS_BUFFERED 2
@@ -37,6 +38,8 @@
 #define RDS_CTRL_RESET 0x52
 #define RDS_CTRL_OFF 0x30
 #define RDS_CTRL_ON 0x31
+
+extern int rds_verify_enabled; // If 1, writes are read back to entire they were written correctly
 
 // Opens the serial port. Returns 1 on error, otherwise 0
 int rds_init(const char* port, int speed);

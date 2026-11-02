@@ -14,10 +14,11 @@ static int conf_web_port = 10001;
 
 static void print_help(char* pgm) {
 	printf("Usage: %s\r\n", pgm);
-	printf("    -f --serial-port  : The path to the serial port to use. Required.\r\n");
-	printf("    -s --serial-speed : Speed of the serial port to use. Default is 19200.\r\n");
-	printf("    -p --web-port     : Port of the web server. Default is 10001.\r\n");
-	printf("    -e --echo         : Enable echo at startup, 1 or 0. On by default.\r\n");
+	printf("    -f --serial-port [path]   : The path to the serial port to use. Required.\r\n");
+	printf("    -s --serial-speed [speed] : Speed of the serial port to use. Default is 19200.\r\n");
+	printf("    -p --web-port [port]      : Port of the web server. Default is 10001.\r\n");
+	printf("    -e --echo [enable]        : Enable or disable echo at startup, 1 or 0. On by default.\r\n");
+	printf("    -v --verify               : Enable verification of writes to the RDS chip. Off by default.\r\n");
 }
 
 int parse_args(int argc, char* argv[]) {
@@ -26,11 +27,12 @@ int parse_args(int argc, char* argv[]) {
 		{ "serial-speed", required_argument, NULL, 's'},
 		{ "web-port", required_argument, NULL, 'p'},
 		{ "echo", required_argument, NULL, 'e'},
+		{ "verify", no_argument, NULL, 'v'},
 		{ 0 }
 	};
 
 	int opt;
-	while ((opt = getopt_long(argc, argv, "f:s:p:e", long_opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:s:p:e:v", long_opts, NULL)) != -1) {
 		switch (opt) {
 
 		case 'f':
@@ -59,6 +61,11 @@ int parse_args(int argc, char* argv[]) {
 				web_echo = 0;
 			if (web_echo > 1)
 				web_echo = 1;
+			break;
+
+		case 'v':
+			// RDS VERIFY
+			rds_verify_enabled = 1;
 			break;
 
 		default:
@@ -101,18 +108,24 @@ int main(int argc, char* argv[])
 	}
 #endif
 
-	//Show name
+	//Print name
 	printf(RDS_NAMEVER "\r\n");
 
 	//Init
 	conf_serial_port[0] = 0;
 #ifdef TEST_MODE
 	strcpy(conf_serial_port, "/dev/ttyUSB0");
+	rds_verify_enabled = 1;
 #endif
 
 	//Read and validate args
 	if (parse_args(argc, argv) || validate_args())
 		return 1;
+
+	//Print args
+	printf("Opening port \"%s\" at %i baud\r\n", conf_serial_port, conf_serial_speed);
+	printf("Echo is %s\r\n", web_echo ? "ON" : "OFF");
+	printf("Verify is %s\r\n", rds_verify_enabled ? "ON" : "OFF");
 
 	//Open port
 	if (rds_init(conf_serial_port, conf_serial_speed))

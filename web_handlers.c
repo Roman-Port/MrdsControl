@@ -40,6 +40,10 @@ static int check_rds_error(client_context_t* client, int result) {
 		printf("RDS operation failed; Command buffer overflow\r\n");
 		client_respond_str(client, "NO ; RDS IC TX OVERFLOW ERROR\r\n");
 		break;
+	case RDS_ERROR_BAD_VERIFY:
+		printf("RDS operation failed; Verify failed\r\n");
+		client_respond_str(client, "NO ; RDS IC READ BACK VERIFY FAILED\r\n");
+		break;
 	default:
 		printf("RDS operation failed; Unknown error.\r\n");
 		client_respond_str(client, "NO ; RDS IO UNKNOWN ERROR\r\n");

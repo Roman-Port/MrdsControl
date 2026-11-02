@@ -240,7 +240,7 @@ static int client_flush(client_context_t* client) {
 	}
 
 	//Send
-	if (client->response.use > 0 && send(client->fd, client->response.buffer, client->response.use, 0) != client->response.use) {
+	if (client->response.use > 0 && send(client->fd, client->response.buffer, client->response.use, MSG_NOSIGNAL) != client->response.use) {
 		printf("Dropped client \"%s\" while transmitting %i bytes.\r\n", client->ip, client->response.use);
 		return 1;
 	}
@@ -313,7 +313,7 @@ static int client_process_command_blank(client_context_t* client) {
 	}
 
 	//Respond with info kinda like the Inovonics does
-	client_respond_str(client, "MRDS to Inovonics Emulator v" RDS_VERSION "\r\n");
+	client_respond_str(client, RDS_NAMEVER "\r\n");
 
 	return 0;
 }
@@ -405,7 +405,7 @@ static void process_client(client_context_t* client) {
 	int ok = 1;
 	while (ok) {
 		//Recieve over network
-		int read = (int)recv(client->fd, transportBuffer, sizeof(transportBuffer), 0);
+		int read = (int)recv(client->fd, transportBuffer, sizeof(transportBuffer), MSG_NOSIGNAL);
 		if (read == 0) {
 			//Properly closed connection
 			break;
@@ -426,7 +426,7 @@ static void process_client(client_context_t* client) {
 				echoLen = (i - lastEchoed) + 1;
 
 				//Echo back like the Inoovnics does
-				if (web_echo && send(client->fd, &transportBuffer[lastEchoed], echoLen, 0) != echoLen) {
+				if (web_echo && send(client->fd, &transportBuffer[lastEchoed], echoLen, MSG_NOSIGNAL) != echoLen) {
 					printf("Dropped %s client while echoing back.\r\n", client->ip);
 					ok = 0;
 					break;
@@ -478,7 +478,7 @@ static void process_client(client_context_t* client) {
 		echoLen = read - lastEchoed;
 
 		//Echo back like the Inoovnics does
-		if (web_echo && send(client->fd, &transportBuffer[lastEchoed], echoLen, 0) != echoLen) {
+		if (web_echo && send(client->fd, &transportBuffer[lastEchoed], echoLen, MSG_NOSIGNAL) != echoLen) {
 			printf("Dropped %s client while echoing back.\r\n", client->ip);
 			ok = 0;
 		}
