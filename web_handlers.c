@@ -369,12 +369,16 @@ int web_write_text(client_context_t* client, int arg) {
 	char data[65];
 	memset(data, ' ', sizeof(data));
 
-	//Read the current control register from the IC
-	RDSOP(rds_register_read(RDS_REG_RTEN, 1, data));
-
 	//Read the client's RT into the rest of the buffer and replace illegal characters
 	client_buffer_read(&client->arg, &data[1], 64);
 	replace_illegal_chars(&data[1], 64);
+
+	//Read the current control register from the IC
+	RDSOP(rds_register_read(RDS_REG_RTEN, 1, data));
+
+	//Temporarily disable RT in the control register to prevent it from being updated while writing to it
+	data[0] &= ~(1 << 0);
+	RDSOP(rds_register_write(RDS_REG_RTEN, 1, data));
 
 	//Enable RT in the control register
 	data[0] |= 1 << 0;
@@ -427,7 +431,7 @@ int web_write_af(client_context_t* client, int arg) {
 	//Enumerate and find the max valid AF to determine the count
 	uint8_t count = 0;
 	for (uint8_t i = 1; i < 16; i++) {
-		if (afs[i] > 0)
+		if (afs[i] > 0 && afs[i] < 0xFF)
 			count = i;
 	}
 

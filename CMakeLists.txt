@@ -19,7 +19,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # Add source to this project's executable.
-add_executable (MrdsControl   "rds.c" "rds.h"  "web.c" "web_handlers.c" "web_handlers.h" "web.h" "main.c" "web_client.h" "web_client.c")
+add_executable (MrdsControl   "rds.c" "rds.h"  "web.c" "web_handlers.c" "web_handlers.h" "web.h" "main.c" "web_client.h" "web_client.c" "version.h")
 
 # Link
 target_link_libraries(MrdsControl PRIVATE Threads::Threads)

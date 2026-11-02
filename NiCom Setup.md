@@ -56,7 +56,7 @@ SSH into the Raspberry Pi. You had previously changed the login to username ``pi
 First, download the binary (or build yourself!), update it's permissions, and copy it to the ``/usr/bin`` folder.
 
 ```
-wget https://github.com/Roman-Port/MrdsControl/releases/download/v0.1/MrdsControl
+wget https://github.com/Roman-Port/MrdsControl/releases/latest/download/MrdsControl-arm
 chmod 777 ./MrdsControl
 sudo mv ./MrdsControl /usr/bin/
 ```

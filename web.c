@@ -12,6 +12,7 @@
 #include "web_client.h"
 #include "web_handlers.h"
 #include "rds.h"
+#include "version.h"
 
 int web_echo = 1;
 
@@ -312,7 +313,7 @@ static int client_process_command_blank(client_context_t* client) {
 	}
 
 	//Respond with info kinda like the Inovonics does
-	client_respond_str(client, "MRDS to Inovonics Emulator v0.1\r\n");
+	client_respond_str(client, "MRDS to Inovonics Emulator v" RDS_VERSION "\r\n");
 
 	return 0;
 }

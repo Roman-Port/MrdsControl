@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include "web.h"
 #include "rds.h"
+#include "version.h"
 
 //#define TEST_MODE
 
@@ -99,6 +100,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 #endif
+
+	//Show name
+	printf(RDS_NAMEVER "\r\n");
 
 	//Init
 	conf_serial_port[0] = 0;
