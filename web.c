@@ -575,11 +575,23 @@ int web_run_server(int port) {
 
 		//Spawn thread for client
 		pthread_t threadId;
-		if (pthread_create(&threadId, NULL, process_client_thread, (void*)clientCtx) != 0) {
-			printf("Failed to create thread for client.\r\n");
+		int threadResult = pthread_create(&threadId, NULL, process_client_thread, (void*)clientCtx);
+		if (threadResult != 0) {
+			//Log
+			printf("Failed to create thread for client; Returned %i, errono %s (%i).\r\n", threadResult, strerror(errno), errno);
+
+			//Close file handle
 			close(clientFd);
+
+			//Release the context
+			free(clientCtx);
+
+			//Bail
 			continue;
 		}
+
+		//Detatch the thread so it will be freed when done
+		pthread_detach(threadId);
 	}
 
 	//Close server
